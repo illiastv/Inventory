@@ -1,0 +1,254 @@
+@host = https://localhost:7080
+
+@adminToken = {{loginAdmin.response.body.$.accessToken}}
+@aliceToken = {{loginAlice.response.body.$.accessToken}}
+@bobToken = {{loginBob.response.body.$.accessToken}}
+
+###
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{ "email": "alice@example.com", "password": "Alice12345" }
+
+###
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{ "email": "bob@example.com", "password": "Bob12345a" }
+
+###
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{ "email": "alice@example.com", "password": "Alice12345" }
+
+###
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{ "email": "not-an-email", "password": "123" }
+
+###
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{ "email": "mallory@example.com", "password": "Mallory123", "role": "Admin" }
+
+###
+# @name loginAlice
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{ "email": "alice@example.com", "password": "Alice12345" }
+
+###
+# @name loginBob
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{ "email": "bob@example.com", "password": "Bob12345a" }
+
+###
+# @name loginAdmin
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{ "email": "admin@example.com", "password": "Admin12345" }
+
+###
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{ "email": "alice@example.com", "password": "wrong-password1" }
+
+###
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{ "email": "nobody@example.com", "password": "Whatever123" }
+
+###
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{ "email": "", "password": "" }
+
+###
+GET {{host}}/api/products
+
+###
+GET {{host}}/api/products
+Authorization: Bearer abc.def.ghi
+
+###
+GET {{host}}/api/auth/me
+Authorization: Bearer {{aliceToken}}
+
+###
+POST {{host}}/api/products
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{ "sku": "SKU-001", "name": "Кава в зернах", "unit": "kg" }
+
+###
+POST {{host}}/api/products
+Authorization: Bearer {{aliceToken}}
+Content-Type: application/json
+
+{ "sku": "SKU-002", "name": "Цукор", "unit": "kg" }
+
+###
+GET {{host}}/api/products
+Authorization: Bearer {{aliceToken}}
+
+###
+POST {{host}}/api/warehouses
+Authorization: Bearer {{aliceToken}}
+Content-Type: application/json
+
+{ "name": "Склад Аліси", "city": "Київ", "ownerId": 1 }
+
+###
+POST {{host}}/api/warehouses
+Authorization: Bearer {{bobToken}}
+Content-Type: application/json
+
+{ "name": "Склад Боба", "city": "Львів" }
+
+###
+GET {{host}}/api/warehouses
+Authorization: Bearer {{aliceToken}}
+
+###
+GET {{host}}/api/warehouses
+Authorization: Bearer {{adminToken}}
+
+###
+GET {{host}}/api/warehouses/1
+Authorization: Bearer {{aliceToken}}
+
+###
+GET {{host}}/api/warehouses/2
+Authorization: Bearer {{aliceToken}}
+
+###
+PUT {{host}}/api/warehouses/2
+Authorization: Bearer {{aliceToken}}
+Content-Type: application/json
+
+{ "name": "Мій тепер", "city": "Київ" }
+
+###
+DELETE {{host}}/api/warehouses/2
+Authorization: Bearer {{aliceToken}}
+
+###
+PUT {{host}}/api/warehouses/2
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{ "name": "Склад Боба", "city": "Львів" }
+
+###
+POST {{host}}/api/stock-movements
+Authorization: Bearer {{aliceToken}}
+Content-Type: application/json
+
+{ "productId": 1, "toWarehouseId": 1, "quantity": 100, "comment": "Постачання" }
+
+###
+POST {{host}}/api/stock-movements
+Authorization: Bearer {{aliceToken}}
+Content-Type: application/json
+
+{ "productId": 1, "toWarehouseId": 2, "quantity": 10 }
+
+###
+POST {{host}}/api/stock-movements
+Authorization: Bearer {{aliceToken}}
+Content-Type: application/json
+
+{ "productId": 1, "fromWarehouseId": 1, "toWarehouseId": 2, "quantity": 10 }
+
+###
+POST {{host}}/api/stock-movements
+Authorization: Bearer {{aliceToken}}
+Content-Type: application/json
+
+{ "productId": 1, "fromWarehouseId": 1, "quantity": 30 }
+
+###
+POST {{host}}/api/stock-movements
+Authorization: Bearer {{aliceToken}}
+Content-Type: application/json
+
+{ "productId": 1, "fromWarehouseId": 1, "quantity": 5000 }
+
+###
+POST {{host}}/api/stock-movements
+Authorization: Bearer {{aliceToken}}
+Content-Type: application/json
+
+{ "productId": 1, "quantity": 0 }
+
+###
+GET {{host}}/api/stock-movements
+Authorization: Bearer {{aliceToken}}
+
+###
+GET {{host}}/api/stock-movements?warehouseId=1
+Authorization: Bearer {{bobToken}}
+
+###
+GET {{host}}/api/stock-movements/1
+Authorization: Bearer {{bobToken}}
+
+###
+GET {{host}}/api/warehouses/1/stock
+Authorization: Bearer {{aliceToken}}
+
+###
+GET {{host}}/api/warehouses/1/stock
+Authorization: Bearer {{bobToken}}
+
+###
+GET {{host}}/api/stock-movements/1
+Authorization: Bearer {{adminToken}}
+
+###
+GET {{host}}/api/reports/turnover
+Authorization: Bearer {{aliceToken}}
+
+###
+GET {{host}}/api/reports/turnover
+Authorization: Bearer {{adminToken}}
+
+###
+GET {{host}}/api/users
+Authorization: Bearer {{aliceToken}}
+
+###
+GET {{host}}/api/users
+Authorization: Bearer {{adminToken}}
+
+###
+PUT {{host}}/api/users/3/role
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{ "role": "Admin" }
+
+###
+PUT {{host}}/api/users/1/role
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{ "role": "User" }
+
+###
+PUT {{host}}/api/users/3/role
+Authorization: Bearer {{adminToken}}
+Content-Type: application/json
+
+{ "role": "Root" }
